@@ -73,6 +73,7 @@ export function BookingFlow({
 
     const fim = addMinutes(parseISO(inicioIso), servico.duracao_min).toISOString();
     const payload: AgendamentoInsert = {
+    const { error } = await supabase.from("agendamentos").insert({
       cliente_id: user.id,
       funcionario_id: funcionarioId,
       servico_id: servicoId,
@@ -82,6 +83,7 @@ export function BookingFlow({
     };
 
     const { error } = await supabase.from("agendamentos").insert(payload as never);
+    });
 
     if (error) {
       alert(error.message);
