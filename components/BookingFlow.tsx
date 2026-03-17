@@ -3,11 +3,14 @@
 import { addMinutes, format, isBefore, parseISO } from "date-fns";
 import { useMemo, useState } from "react";
 import { createBrowserClient } from "@/lib/supabase-browser";
+import { Database } from "@/types/database";
 
 type Funcionario = { id: string; nome: string; dias_trabalho: number[] };
 type Servico = { id: string; nome: string; duracao_min: number };
 type Funcionamento = { dia_semana: number; abre: string; fecha: string };
 type Agenda = { funcionario_id: string; inicio: string; fim: string; status: string };
+
+type AgendamentoInsert = Database["public"]["Tables"]["agendamentos"]["Insert"];
 
 export function BookingFlow({
   funcionarios,
@@ -69,14 +72,16 @@ export function BookingFlow({
     }
 
     const fim = addMinutes(parseISO(inicioIso), servico.duracao_min).toISOString();
-    const { error } = await supabase.from("agendamentos").insert({
+    const payload: AgendamentoInsert = {
       cliente_id: user.id,
       funcionario_id: funcionarioId,
       servico_id: servicoId,
       inicio: inicioIso,
       fim,
       status: "agendado"
-    });
+    };
+
+    const { error } = await supabase.from("agendamentos").insert(payload as never);
 
     if (error) {
       alert(error.message);

@@ -7,6 +7,10 @@ type AgendamentoResumo = Pick<
   "id" | "inicio" | "status" | "cliente_id" | "funcionario_id" | "servico_id"
 >;
 
+type ProfileResumo = Pick<Database["public"]["Tables"]["profiles"]["Row"], "id" | "full_name">;
+type FuncionarioResumo = Pick<Database["public"]["Tables"]["funcionarios"]["Row"], "id" | "nome">;
+type ServicoResumo = Pick<Database["public"]["Tables"]["servicos"]["Row"], "id" | "nome">;
+
 export default async function AgendasPage() {
   const supabase = createServerClient();
   const { data } = await supabase
@@ -27,9 +31,13 @@ export default async function AgendasPage() {
     supabase.from("servicos").select("id,nome").in("id", idsServico.length ? idsServico : [""])
   ]);
 
-  const mapCliente = new Map((clientes ?? []).map((c) => [c.id, c.full_name]));
-  const mapFunc = new Map((funcionarios ?? []).map((f) => [f.id, f.nome]));
-  const mapServ = new Map((servicos ?? []).map((s) => [s.id, s.nome]));
+  const perfis: ProfileResumo[] = (clientes ?? []) as ProfileResumo[];
+  const staff: FuncionarioResumo[] = (funcionarios ?? []) as FuncionarioResumo[];
+  const catalogo: ServicoResumo[] = (servicos ?? []) as ServicoResumo[];
+
+  const mapCliente = new Map(perfis.map((c) => [c.id, c.full_name]));
+  const mapFunc = new Map(staff.map((f) => [f.id, f.nome]));
+  const mapServ = new Map(catalogo.map((s) => [s.id, s.nome]));
 
   const items = agendamentos.map((a) => ({
     id: a.id,

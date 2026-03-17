@@ -1,6 +1,8 @@
 import "./globals.css";
 import type { Metadata } from "next";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Barbearia Pro",
   description: "Sistema completo de gestão e agendamento para barbearia"
